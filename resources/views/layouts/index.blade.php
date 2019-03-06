@@ -1,0 +1,5 @@
+@include('layouts.header')
+@include('layouts.menu_top')
+@include('layouts.side')
+  @yield('content')
+@include('layouts.footer')
