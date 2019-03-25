@@ -17,7 +17,7 @@ class AuthenticateSeller
     {
 
         if (!empty(\Session::get('auth'))) {
-           return redirect('/admin/karyawan');
+           return redirect('/admin/dashboard');
         }
          return $next($request);
     }

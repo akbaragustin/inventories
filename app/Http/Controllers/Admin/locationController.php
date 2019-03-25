@@ -18,6 +18,10 @@ class locationController extends Controller
         $data['locations'] = LC::where('status_id','!=',3)->get()->toArray();
         return view('admin/location/location',$data);
     }
+    public function locationGoods() {
+        $data['locations'] = LC::where('status_id','!=',3)->get()->toArray();
+        return view('admin/location/location_goods',$data);
+    }
     public function create() {
         $rules=[
             'name'=>'required',

@@ -3,6 +3,7 @@
 use App\Http\Requests;
 use Illuminate\Support\Facades\Input;
 use App\Http\Controllers\Controller;
+use App\Models\Assets as AST;
 use App\Models\Locations as LC;
 use Illuminate\Http\Request;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
@@ -15,24 +16,14 @@ class assetController extends Controller
 
     public function index()
     {
-        $data['locations'] = LC::where('status_id','!=',3)->get()->toArray(); 
+        $data['locations'] = LC::where('status_id','!=',3)->get()->toArray();
+        $assets = AST::GetAll();
+        $data['assets'] = json_decode(json_encode($assets), true);
+        // echo "<pre>";
+        // print_r($data['assets']);die;
         return view('admin/asset/asset_taker',$data);
     }
     public function create() {
-        $rules=[
-            'name'=>'required',
-            'email'=>'required',
-            'password'=>'required',
-            'position_id'=> 'required'
-             ];
-        $messages=[
-            'name.required'=>config('constants.ERROR_JML_WAJIB'),
-            'email.required'=>config('constants.ERROR_JML_WAJIB'),
-            'password.required'=>config('constants.ERROR_JML_WAJIB'),
-            'position_id.required'=>config('constants.ERROR_JML_WAJIB'),
-        ];
-        $validator=Validator::make(Input::all(), $rules, $messages);
-        if ($validator->passes()) {
             //get Data session for creator
             if (!empty(Input::get('id'))) {
                 //this is update employe
@@ -42,57 +33,55 @@ class assetController extends Controller
             $return = $this->save(Input::all());
             return $return;
             }
-        $return['status'] = false;
-        $return['messages'] =$validator;
-        $return['data'] =[];
-        return $return;
-    }
+
 }
     public function save($data) {
-        $checkPassword = US::where('password', md5($data['password']))->get()->toArray();
-        if (empty($checkPassword)) {
+        if (empty(Input::file('picture'))) {
+            $return['status'] = false;
+            $return['messages'] ='Silahkan isi nota';
+            $return['data'] =[];
+            return $return;
+        }
+         $dataSession = \Session::get('auth');
             $picture =$this->uploadfile('picture');
-            $users =new US;
-            $users->name =$data['name'];
-            $users->position_id =$data['position_id'];
-            $users->password =md5($data['password']);
-            $users->email =$data['email'];
-            $users->created_at =date('Y-m-d H:i:s');
-            $users->updated_at=date('Y-m-d H:i:s');
-            $users->phone_number= $data['phone_number'];
-            $users->file_path = $picture;  
-            $users->save();
+            $asset =new AST;
+            $asset->name =$data['name'];
+            $asset->location_id =$data['location_id'];
+            $asset->type =$data['type'];
+            $asset->shift =$data['shift'];
+            $asset->created_at =date('Y-m-d H:i:s');
+            $asset->updated_at=date('Y-m-d H:i:s');
+            $asset->quantity= $data['quantity'];
+            $asset->status_id= 1;
+            $asset->price= str_replace('.','',$data['price']);
+            $asset->description= $data['description'];
+            $asset->date_transaction= date('Y-m-d',strtotime($data['date_transaction']));
+            $asset->created_by=$dataSession['id'];
+            $asset->file_path = $picture;  
+            $asset->save();
            
             $return['status'] = true;
             $return['messages'] ='Berhasil';
-            $return['data'] =[];
-            return $return;
-
-        }
-            $validator = 'password yang anda gunakan telah tersedia. gunakan password lain!';
-            $return['status'] = true;
-            $return['messages'] =$validator;
             $return['data'] =[];
             return $return;
     }
    
     
     public function update($data) {
-           
+           $dataSession = \Session::get('auth');
            //get data id_category where brand and category 
-           $user =US::find($data['id']);
-           $user->name =$data['name'];
-           $user->position_id =$data['position_id'];
-           if ($data['password'] == $data['old_password']) {
-            $user->password =$data['password'];
-           }else{
-            $user->password =md5($data['password']);
-           }
-           $user->email =$data['email'];
-           $user->updated_at=date('Y-m-d H:i:s');
-           $user->phone_number= $data['phone_number'];
+           $asset =AST::find($data['id']);
+           $asset->name =$data['name'];
+           $asset->location_id =$data['location_id'];
+           $asset->shift =$data['shift'];
+           $asset->quantity =$data['quantity'];
+           $asset->price =$data['price'];
+           $asset->description =$data['description'];
+           $asset->date_transaction= date('Y-m-d',strtotime($data['date_transaction']));
+           $asset->created_by=$dataSession['id'];
+           $asset->updated_at=date('Y-m-d H:i:s');
            if (!empty(Input::file('picture'))) {
-              $user->file_path =$this->uploadfile('picture');
+              $asset->file_path =$this->uploadfile('picture');
                if (!empty($data['picture_repeat'])) {
                $deleteImage = getcwd().'/uploads/picture/'.$data['picture_repeat'];
                    if (file_exists($deleteImage)) {
@@ -100,7 +89,7 @@ class assetController extends Controller
                    }
                }
            }
-           $user->update();
+           $asset->update();
            //return
            $return['status'] = true;
            $return['messages'] ='Berhasil';
@@ -123,8 +112,9 @@ class assetController extends Controller
         //get id karyawan
         $id =Input::get('id');
         //get karyawan by id
-        $edit = US::getByID($id);
+        $edit = AST::getByID($id);
         $data = json_decode(json_encode($edit), true);
+        $data[0]['date_transaction'] = date("m/d/Y",strtotime($data[0]['date_transaction']));
         if ($edit) {
             $data[0]['submit'] = "Update";
             $json['status'] = true;
@@ -141,14 +131,32 @@ class assetController extends Controller
     public function delete($id)
     {
         try {
-            $user = US::find($id);
-            $user->delete();
+            $asset = AST::find($id);
+            $asset->status_id = 3;
+            $asset->update();
         } catch (\Exception $e) {
             \Session::flash('DeleteFails', 'this data is used in other tables');
-            return \Redirect::to(route('user.index'));
+            return \Redirect::to(route('asset.index'));
         }
 
         \Session::flash('DeleteSucces', 'SUCCESS');
-        return \Redirect::to(route('user.index'));
+        return \Redirect::to(route('asset.index'));
     }
+    public function showAjax(){
+        $id = Input::get('id_asset');
+        $edit = AST::getByID($id);
+        $data = json_decode(json_encode($edit), true);
+        $list['data'] =$data[0];
+        
+       return view('admin/asset/show',$list);
+   }
+  public function printPrecord(){
+         $id = Input::get('id');
+        $edit = AST::getByID($id);
+        $data = json_decode(json_encode($edit), true);
+        $list['data'] =$data[0];
+        
+   return view('admin/asset/show_print',$list);
+   }
+
 }

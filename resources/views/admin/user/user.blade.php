@@ -60,7 +60,7 @@
               </div>
             </div>
               <div class="control-group">
-              <label class="control-label">File upload input</label>
+              <label class="control-label">Photo</label>
               <div class="controls">
                 <input type="file" name="picture" id="picture" class="picture" />
                 <img id="imgID" src=""  alt="" style="width:60px" class="imgID">

@@ -4,11 +4,18 @@
 </div>
 
 <!--end-Footer-part-->
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 <script src="{{ URL::asset('') }}plugins/js/excanvas.min.js"></script> 
 <script src="{{ URL::asset('') }}plugins/js/jquery.min.js"></script> 
+<script src="https://cdn.rawgit.com/igorescobar/jQuery-Mask-Plugin/1ef022ab/dist/jquery.mask.min.js"></script>
+
+<!-- <script src="https://code.jquery.com/jquery-1.12.4.js"></script> -->
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 <script src="{{ URL::asset('') }}plugins/js/jquery.ui.custom.js"></script> 
 <script src="{{ URL::asset('') }}plugins/js/bootstrap.min.js"></script> 
+<script src="{{ URL::asset('') }}plugins/select2/js/select2.min.js"></script>
+<!-- <script src="{{ URL::asset('') }}plugins/js/select2.min.js"></script>  -->
+	<!--end-Footer-part-->
 <script src="{{ URL::asset('') }}plugins/js/jquery.flot.min.js"></script> 
 <script src="{{ URL::asset('') }}plugins/js/jquery.flot.resize.min.js"></script> 
 <script src="{{ URL::asset('') }}plugins/js/jquery.peity.min.js"></script> 
@@ -24,7 +31,6 @@
 <script src="{{ URL::asset('') }}plugins/js/matrix.form_validation.js"></script> 
 <script src="{{ URL::asset('') }}plugins/js/jquery.wizard.js"></script> 
 <script src="{{ URL::asset('') }}plugins/js/jquery.uniform.js"></script> 
-<!-- <script src="{{ URL::asset('') }}plugins/js/select2.min.js"></script>  -->
 <script src="{{ URL::asset('') }}plugins/js/matrix.popover.js"></script> 
 
 
