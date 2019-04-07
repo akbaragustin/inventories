@@ -1,15 +1,26 @@
 @extends('layouts.index')
 @section('content')
+@section('header')
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+@endsection
 <!--main-container-part-->
 <div id="content">
   <div id="content-header">
     <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#">Form elements</a> <a href="#" class="current">Validation</a> </div>
     <h1>DATA BAHAN MAKANAN PERLOKASI</h1>
   </div>
+
   <div class="container-fluid"><hr>
     <div class="row-fluid">
       <div class="span12">
         <div class="widget-box">
+          <div class="pull-right button-right close hidden ">     
+            <a href="#" class="closeRuangan padding">
+                <div class="btn btn-danger waves-effect delete-menu material-icons">
+                  <i class="fa fa-times"></i>
+                </div>
+            </a>
+          </div>
           <div class="widget-title"> <span class="icon"> <i class="icon-info-sign"></i> </span>
             <h5>Filter Bahan Makanan</h5>
           </div>
@@ -37,8 +48,8 @@
               <div class="control-group">
                 <label class="control-label">Status</label>
                 <div class="controls">
-                <input type="checkbox" name="vehicle" value="Bike">Pemasukan <br>
-                <input type="checkbox" name="vehicle" value="Car">Pengeluaran<br>
+                <input type="checkbox" name="status[]" value="1" class="status" id="status">Pemasukan <br>
+                <input type="checkbox" name="status[]" value="2" class="status" id="status">Pengeluaran<br>
                 </div>
               </div>
               <div class="control-group">
@@ -62,6 +73,17 @@
              <!-- <input type="submit" value="Validate" class="btn btn-success"> -->
               </div>
             </form>
+        <div class="pull-right button-right print hidden">
+          <br>
+          <a href="#" class="print">
+          <div class="btn bg-blue-grey waves-effect edit-menu material-icons">
+            <i class="fa fa-print"></i>
+          </div>
+          </a>
+        </div>
+            <div class="show">
+            
+            </div>
           </div>
         </div>
       </div>
@@ -74,33 +96,34 @@
 @section('js')
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script>
-  var urlSave ="{{url(route('location.create'))}}";
+  var urlSave ="{{url(route('location.location.getTransaction'))}}";
   var  urlEdit = "{{url('/admin/location/edit')}}";
   var  urlDelete = "{{url('/admin/location/delete')}}";
 
   $( ".datepicker" ).datepicker();
   $('#myTable').DataTable();
+  $( '.returnPrice' ).mask('000.000.000.000.000', {reverse: true});
  //this is validation jquery
   $('#signupForm').validate({
           //condition form validate
           rules:{
-              name :"required",
-              city :"required",
-              country :"required",
+              location_id :"required",
+              date_transaction :"required",
+              status :"required",
+              shift : "required"
              
           },
           //this is if form valid
           messages: {
-              name :{
+              location_id :{
                   required : "Please enter your name",
               },
-              city :{
+              date_transaction :{
                   required : "Please enter your city",
               },
-              country :{
+              status :{
                   required : "Please enter your countrys",
-              },
-             
+              }, 
           },
           errorClass: "help-inline",
           errorElement: "span",
@@ -112,38 +135,25 @@
             $(element).parents('.control-group').addClass('success');
           },
       submitHandler: function(form) {
-          //thi is get data form
-          var formData = new FormData();
-       
-          formData.append('name', $('#name').val());
-          formData.append('city', $('#city').val());
-          formData.append('country', $('#country').val());
-          formData.append('description', $('#description').val());
-          formData.append('id', $('.id').val());
-          formData.append('_token', $('#_token').val());
-        
         
           //this is sent data to controller with ajax
           $.ajax({
-              type: "POST",
+              type: "GET",
               url: urlSave,
               dataType : 'json',
-              data: formData,
-              processData: false,  // tell jQuery not to process the data
-              contentType: false,  // tell jQuery not to set contentType
+              data: $("#signupForm").serialize(),
               success: function(retval) {
                       // if sent save success then swall alert and reload page
                       if (retval.status == true){
-                          $('#reset').trigger('click');
-                          $('.imgID').remove();
-                          swal(retval.messages, "You clicked the button!", "success").then((willDelete) => {
-                              if (willDelete) {
-                                location.reload();
-                              } else {
-                                location.reload();
-                              }
-                            });  
-                          
+                        $(".signupForm").addClass("hidden");
+				                $( ".show" ).html(retval.data);
+                        $(".print").removeClass("hidden");
+                        $(".close").removeClass("hidden");
+                        // var myWindow=  window.open("Report","report");
+                        //     myWindow.open();
+                        //     myWindow.document.write('<html><body>' + retval.data + '</body></html>');
+                        //     myWindow.document.close();
+                           
                       // this is save fails then swall alert error
                       }else if(retval.status == false){
                           swal("Save fails!",retval.messages, "error")
@@ -152,54 +162,15 @@
           });
       }
   });
-
-  function editProcess(id){
-      $.ajax({
-          type: "GET",
-          url: urlEdit,
-          dataType : 'json',
-          data: {
-              id :id
-          },
-          success:function(retval) {
-              if (retval.status =true) {
-                  $(window).scrollTop(0);
-                  $('.id').val(retval.data.id);
-                  $('.name').val(retval.data.name);
-                  $('.city').val(retval.data.city);
-                  $('.country').val(retval.data.country);
-                  $('.description').val(retval.data.description);
-                  $('.submit').val(retval.data.submit);
-                  
-              }else{
-              swal("Fails!",retval.messages, "error")
-              }
-
-          }
-      });
-  } 
-    //function delete
-  function deletProcess(id){
-    swal({
-      title: "Apa anda yakin?",
-      text: "Setelah dihapus, Anda tidak akan dapat memulihkan data ini!!",
-      icon: "warning",
-      buttons: true,
-      dangerMode: true,
-    })
-    .then((willDelete) => {
-      if (willDelete) {
-        window.location.href = urlDelete+'/'+id;
-        swal("Data Telah Terhapus", {
-          icon: "success",
-        });
-      } else {
-        swal("Data Tetap Tersimpan!");
-      }
-    });
-  }
-  
-
+  $('.print').click(function(){
+      w=window.open();
+      w.document.write($(".show").html());
+      w.print();
+      w.close(); 
+  });
+  $('.closeRuangan').click(function(){
+    location.reload();
+  });
 </script>
 @endsection
 @stop

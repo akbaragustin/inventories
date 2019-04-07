@@ -117,4 +117,65 @@ class locationController extends Controller
         \Session::flash('DeleteSucces', 'SUCCESS');
         return \Redirect::to(route('location.index'));
     }
+    public function getTransaction()
+    {
+    $search = Input::all();
+    $income = false;
+    $outcome = false;
+    $i = 0;
+    $o = 0;
+    foreach ($search['status'] as $key => $value) {
+       if ($value == 1) {
+           $income = true;
+       }
+       if ($value == 2){
+           $outcome = true;
+       }
+    }
+    if ($income == true) {
+        $dataDetail = LC::GetTransaction($search,true);
+        foreach ($dataDetail as $key => $value) {
+            $getFoodTransactionDetail = LC::GetFoodTransactionDetail($value->detail_id);
+            $value->food_detail= (object)[];
+            $value->food_detail = $getFoodTransactionDetail;
+        }
+        $data_income = json_decode(json_encode($dataDetail), true);
+        if (!empty($data_income)) {
+            $list['data_outcome'] = $data_income[0];
+            $i = $data_income[0]['price'];
+        }
+    }
+    if ($outcome == true) {
+        $dataDetailOutcome = LC::GetTransaction($search, false);
+        foreach ($dataDetailOutcome as $key => $value) {
+            $getFoodTransactionDetail = LC::GetFoodTransactionDetail($value->detail_id);
+            $value->food_detail= (object)[];
+            $value->food_detail = $getFoodTransactionDetail;
+        }
+        $data_outcome = json_decode(json_encode($dataDetailOutcome), true);
+        if (!empty($data_outcome)) {
+            $list['data'] = $data_outcome[0];
+            $o = $data_outcome[0]['price'];
+        }
+    } 
+        if (!empty($data_income) || !empty($data_outcome)) { 
+            $list['calculate'] = $i - $o;
+            if ($list['calculate'] < 0) {
+                $list['minus_calculate'] = 1;
+            }else {
+                $list['minus_calculate'] = 2;
+            }
+            
+            $result = view('admin/location/show_transaction',$list)->render();
+            $json['status'] = true;
+            $json['messages'] = '';
+            $json['data'] = $result;
+           return Response::json($json);
+        }
+        $json['status'] = false;
+        $json['messages'] = 'Data tidak ditemukan';
+        $json['data'] = [];
+        return Response::json($json);
+    }
+    
 }

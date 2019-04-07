@@ -33,6 +33,7 @@ Route::group(['middleware' => 'seller_auth'], function() {
         Route::get('/position/delete/{id}', ['uses' =>'positionController@delete','as'=>'position.delete']);
         //location
         Route::get('/location', ['uses' =>'locationController@index','as'=>'location.index']);
+        Route::get('/location/get-transaction', ['uses' =>'locationController@getTransaction','as'=>'location.location.getTransaction']);
         Route::get('/location/goods', ['uses' =>'locationController@locationGoods','as'=>'location.goods']);
         Route::post('/location', ['uses' =>'locationController@create','as'=>'location.create']);
         Route::get('/location/edit', ['uses' =>'locationController@edit','as'=>'location.edit']);
@@ -59,6 +60,9 @@ Route::group(['middleware' => 'seller_auth'], function() {
         Route::get('/food-show', ['uses' =>'foodController@showAjax','as'=>'food.showAjax']);
         Route::get('/food-print', ['uses' =>'foodController@printPrecord','as'=>'food.printPrecord']);
         Route::get('/food-get-goods', ['uses' =>'foodController@getGoodsDetail','as'=>'food.getGoodsDetail']);
-        
+        //report
+        Route::get('/report', ['uses' =>'reportController@index','as'=>'report.index']);
+        Route::post('/report', ['uses' =>'reportController@create','as'=>'report.create']);
+       
     });
 });

@@ -13,7 +13,7 @@ class DetailTransactionGoods extends Model {
     protected $table = 'detail_transaction_goods';
     protected $primaryKey = 'id';
     public $timestamps = false;
-    protected $fillable = ['id', 'file_path', 'location_id','description','updated_at','created_at','shift','price','status_id','date_transaction'];
+    protected $fillable = ['id', 'file_path', 'location_id','description','updated_at','created_at','shift','price','status_id','date_transaction','income'];
    
     public static function getAll()
     {

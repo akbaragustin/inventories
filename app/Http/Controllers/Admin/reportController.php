@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Validator;
 use Response;
 use DB;
-class foodController extends Controller
+class reportController extends Controller
 {
 
     private $parser = array();
@@ -32,9 +32,11 @@ class foodController extends Controller
                 $data['detail_transaction_goods'][$key]['transaction_goods'] = $check;
              
             }
-        return view('admin/food/food',$data);
+        return view('admin/report/report',$data);
     }
     public function create() {
+        echo "<pre>";
+        print_r(Input::all());die;
             //get Data session for creator
             if (!empty(Input::get('id'))) {
             $return =$this->update(Input::all());
