@@ -39,13 +39,13 @@ $(document).ready(function(){
 		colour: "#757575"
 	});
 	
-	// === jQeury Gritter, a growl-like notifications === //
-	$.gritter.add({
-		title:	'Important Unread messages',
-		text:	'You have 12 unread messages.',
-		image: 	'img/demo/envelope.png',
-		sticky: false
-	});	
+	// // === jQeury Gritter, a growl-like notifications === //
+	// $.gritter.add({
+	// 	title:	'Important Unread messages',
+	// 	text:	'You have 12 unread messages.',
+	// 	image: 	'img/demo/envelope.png',
+	// 	sticky: false
+	// });	
 	$('#gritter-notify .normal').click(function(){
 		$.gritter.add({
 			title:	'Normal notification',

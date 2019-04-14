@@ -6,7 +6,7 @@
 <!--main-container-part-->
 <div id="content">
   <div id="content-header">
-    <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#">Form elements</a> <a href="#" class="current">Validation</a> </div>
+    <div id="breadcrumb"> <a href="<?php echo url('/admin'); ?>" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a></div>
     <h1>DATA BAHAN MAKANAN PERLOKASI</h1>
   </div>
 

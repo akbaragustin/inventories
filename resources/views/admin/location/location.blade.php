@@ -3,7 +3,7 @@
 <!--main-container-part-->
 <div id="content">
   <div id="content-header">
-    <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#">Form elements</a> <a href="#" class="current">Validation</a> </div>
+    <div id="breadcrumb"> <a href="<?php echo url('/admin'); ?>" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a></div>
     <h1>LOKASI</h1>
   </div>
   <div class="container-fluid"><hr>
@@ -33,13 +33,7 @@
                   <input type="text" name="city" id="city" class="city">
                 </div>
               </div>
-              <div class="control-group">
-                <label class="control-label">Negara</label>
-                <div class="controls">
-                  <input type="text" name="country" id="country" class="country">
-                </div>
-              </div>
-            
+          
             <input type="hidden" name="id" class="id" value ="" id="id">
             
             <input type="hidden" name="_token" value="{{ csrf_token() }}" id="_token">
@@ -152,7 +146,6 @@
        
           formData.append('name', $('#name').val());
           formData.append('city', $('#city').val());
-          formData.append('country', $('#country').val());
           formData.append('description', $('#description').val());
           formData.append('id', $('.id').val());
           formData.append('_token', $('#_token').val());

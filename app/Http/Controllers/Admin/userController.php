@@ -64,6 +64,7 @@ class userController extends Controller
             $users->created_at =date('Y-m-d H:i:s');
             $users->updated_at=date('Y-m-d H:i:s');
             $users->phone_number= $data['phone_number'];
+            $users->date_payday = date("Y-m-d",strtotime($data['date_payday']));
             $users->file_path = $picture;  
             $users->save();
            
@@ -74,7 +75,7 @@ class userController extends Controller
 
         }
             $validator = 'password yang anda gunakan telah tersedia. gunakan password lain!';
-            $return['status'] = true;
+            $return['status'] = false;
             $return['messages'] =$validator;
             $return['data'] =[];
             return $return;
@@ -87,6 +88,7 @@ class userController extends Controller
            $user =US::find($data['id']);
            $user->name =$data['name'];
            $user->position_id =$data['position_id'];
+           $user->date_payday = date("Y-m-d",strtotime($data['date_payday']));
            if ($data['password'] == $data['old_password']) {
             $user->password =$data['password'];
            }else{

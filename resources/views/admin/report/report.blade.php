@@ -3,7 +3,7 @@
 <!--main-container-part-->
 <div id="content">
   <div id="content-header">
-    <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#">Form elements</a> <a href="#" class="current">Validation</a> </div>
+    <div id="breadcrumb"> <a href="<?php echo url('/admin'); ?>" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a></div>
     <h1>Report Harian</h1>
   </div>
   <div class="container-fluid"><hr>
@@ -28,6 +28,9 @@
                       ?>
                   </select>
                 </div>
+              </div>
+              <div class="foods_form">
+              
               </div>
               <div class="control-group">
                 <label class="control-label">Shift Kerja <span style="color:red">*</span></label>
@@ -141,29 +144,29 @@
 <script src="http://malsup.github.com/jquery.form.js"></script> 
 <script>
   var urlSave ="{{url('/admin/report')}}";
-  var  urlEdit = "{{url('/admin/food/edit')}}";
-  var  urlDelete = "{{url('/admin/food/delete')}}";
-  var urlAjaxShow = "{{url('/admin/food-show')}}";
-  var urlGetPcs = "{{url(route('food.getGoodsDetail'))}}";
+  var  urlEdit = "{{url('/admin/report/edit')}}";
+  var  urlDelete = "{{url('/admin/report/delete')}}";
+  var urlAjaxShow = "{{url('/admin/report-show')}}";
+  var urlGetFoods = "{{url(route('report.getFoods'))}}";
 
   $(".location_id").removeClass("select2-hidden-accessible");
 
   $( ".datepicker" ).datepicker();
-  $('.name_goods').change(function(){
-		var id = $('.name_goods').val();
+  $('.location_id').change(function(){
+		var id = $('.location_id').val();
 		if (id == null) {
-			$( ".add_goods" ).empty();
+			$( ".foods_form" ).empty();
 		}
 	$.ajax({
 			type: "GET",
-			url: urlGetPcs,
+			url: urlGetFoods,
 			dataType : 'json',
 			data: {
 				id :id
 			},
 			success: function(retval) {
 
-				$( ".add_goods" ).html(retval) ;
+				$( ".foods_form" ).html(retval) ;
 			}
 		});
 	});
@@ -224,6 +227,17 @@
           formData.append('date_transaction', $('#date_transaction').val());
           formData.append('id', $('.id').val());
           formData.append('_token', $('#_token').val());
+          var array = {};
+          $('.foods').each(function(index,value) {
+              array[$(this).attr('name')] = $(this).val();
+           });
+           formData.append('foods', JSON.stringify(array));
+
+           var foodsBefore = {};
+          $('.foodsBefore').each(function(index,value) {
+            foodsBefore[$(this).attr('name')] = $(this).val();
+           });
+           formData.append('foods_before', JSON.stringify(foodsBefore));
           //this is sent data to controller with ajax
           $.ajax({
               type: "POST",

@@ -21,7 +21,6 @@ class loginController extends Controller
     {
         $users = US::getAll();
         $data = json_decode(json_encode($users), true);
-
         $alldataAuth = !empty($data[0]) ? $data[0] :'' ;
         if (empty($alldataAuth)) {
             \Session::flash('messageError', 'Login Gagal');

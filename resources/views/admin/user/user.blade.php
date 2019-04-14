@@ -3,7 +3,7 @@
 <!--main-container-part-->
 <div id="content">
   <div id="content-header">
-    <div id="breadcrumb"> <a href="index.html" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> <a href="#">Form elements</a> <a href="#" class="current">Validation</a> </div>
+    <div id="breadcrumb"> <a href="<?php echo url('/admin'); ?>" title="Go to Home" class="tip-bottom"><i class="icon-home"></i> Home</a> </div>
     <h1>USER</h1>
   </div>
   <div class="container-fluid"><hr>
@@ -59,6 +59,12 @@
                 </select>
               </div>
             </div>
+            <div class="control-group">
+              <label class="control-label">Tanggal Gajihan Karyawan<span style="color:red">*</span></label>
+              <div class="controls">
+                  <input type="text" id="date_payday" name="date_payday" class="datepicker date_payday" >
+              </div>
+            </div>
               <div class="control-group">
               <label class="control-label">Photo</label>
               <div class="controls">
@@ -100,6 +106,7 @@
                   <th>Nama</th>
                   <th>Email</th>
                   <th>Jabatan</th>
+                  <th>Tanggal Gajihan</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -114,6 +121,7 @@
                   <td>{{$value['name']}} </td>
                   <td>{{$value['email']}}</td>
                   <td>{{$value['name_position']}}</td>
+                  <td><?php echo date("d M Y",strtotime($value['date_payday'])); ?></td>
                   <td>
                                             <a class="btn bg-blue-grey waves-effect edit-menu material-icons" onclick="editProcess({{$value['id']}})">
                                                 edit
@@ -142,6 +150,9 @@
   var urlSaveUser ="{{url(route('user.create'))}}";
   var  urlEdit = "{{url('/admin/user/edit')}}";
   var  urlDelete = "{{url('/admin/user/delete')}}";
+
+  $( ".datepicker" ).datepicker();
+
   $('#myTable').DataTable();
  //this is validation jquery
   $('#signupForm').validate({
@@ -154,6 +165,7 @@
                   equalTo: "#password"
               },
               position_id : "required",
+              date_payday : "required",
           },
           //this is if form valid
           messages: {
@@ -168,6 +180,9 @@
               },
               confirm_password :{
                   equalTo : "Password not macth",
+              },
+              password :{
+                  required : "Please enter your tanggal gajihan",
               },
           },
           errorClass: "help-inline",
@@ -190,6 +205,7 @@
           formData.append('phone_number', $('#phone_number').val());
           formData.append('id', $('.id').val());
           formData.append('picture_repeat', $('.picture_repeat').val());
+          formData.append('date_payday', $('.date_payday').val());
           formData.append('old_password', $('.old_password').val());
           formData.append('_token', $('#_token').val());
         

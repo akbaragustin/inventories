@@ -22,16 +22,15 @@ class locationController extends Controller
         $data['locations'] = LC::where('status_id','!=',3)->get()->toArray();
         return view('admin/location/location_goods',$data);
     }
+   
     public function create() {
         $rules=[
             'name'=>'required',
             'city'=>'required',
-            'country'=>'required',   
              ];
         $messages=[
             'name.required'=>config('constants.ERROR_JML_WAJIB'),
-            'city.required'=>config('constants.ERROR_JML_WAJIB'),
-            'country.required'=>config('constants.ERROR_JML_WAJIB'),   
+            'city.required'=>config('constants.ERROR_JML_WAJIB'),   
         ];
         $validator=Validator::make(Input::all(), $rules, $messages);
         if ($validator->passes()) {
@@ -56,7 +55,7 @@ class locationController extends Controller
             $location->name =$data['name'];
             $location->city =$data['city'];
             $location->description =$data['description'];
-            $location->country =$data['country'];
+            $location->country = "Indonesia";
             $location->status_id = 1;
             $location->created_at = date("Y-m-d H:i:s");
             $location->updated_at = date("Y-m-d H:i:s");
@@ -76,7 +75,7 @@ class locationController extends Controller
            $location->name =$data['name'];
            $location->city =$data['city'];
            $location->description =$data['description'];
-           $location->country =$data['country'];
+           $location->country = "Indonesia";
            $location->status_id = 1;
            $location->updated_at = date("Y-m-d H:i:s");
            $location->created_by = $dataSession['id'];

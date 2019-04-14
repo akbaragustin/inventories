@@ -47,7 +47,6 @@ class assetController extends Controller
             $asset =new AST;
             $asset->name =$data['name'];
             $asset->location_id =$data['location_id'];
-            $asset->type =$data['type'];
             $asset->shift =$data['shift'];
             $asset->created_at =date('Y-m-d H:i:s');
             $asset->updated_at=date('Y-m-d H:i:s');

@@ -13,7 +13,7 @@ class Users extends Model {
     protected $table = 'users';
     protected $primaryKey = 'id';
     public $timestamps = false;
-    protected $fillable = ['id', 'name', 'email', 'phone_number', 'created_at', 'updated_at','position_id','password'];
+    protected $fillable = ['id', 'name', 'email', 'phone_number', 'created_at', 'updated_at','position_id','password','date_payday'];
 
      public static function getAll()
     {
@@ -44,7 +44,7 @@ class Users extends Model {
         if (!empty($start) AND !empty($length)) {
         $limit  = "LIMIT ".$length." OFFSET ".$start;
         }
-        $query = " select users.id,users.name,users.email,users.phone_number,users.created_at,users.updated_at,users.file_path,positions.name as name_position from users
+        $query = " select users.id,users.date_payday,users.name,users.email,users.phone_number,users.created_at,users.updated_at,users.file_path,positions.name as name_position from users
                     LEFT JOIN positions ON positions.id  = users.position_id
                 ".$where."
                 ".$limit."
@@ -56,7 +56,7 @@ class Users extends Model {
     public static function getByID($id)
     {
         $where = "where users.id = '".$id."'";
-        $query = " select users.password,users.id,users.name,users.email,users.phone_number,users.created_at,users.updated_at,users.file_path,positions.name as name_position, positions.id as position_id from users
+        $query = " select users.password,users.date_payday,users.id,users.name,users.email,users.phone_number,users.created_at,users.updated_at,users.file_path,positions.name as name_position, positions.id as position_id from users
                     LEFT JOIN positions ON positions.id  = users.position_id
                     ".$where."
                 ";

@@ -20,10 +20,9 @@ class reportController extends Controller
 
     public function index()
     {
-        $data['goods'] = GS::all()->toArray();
-        $data['locations'] = LC::where('status_id','!=',3)->get()->toArray();
         
-        $detailTransaction = DTG::GetAll();
+        $data['locations'] = LC::where('status_id','!=',3)->get()->toArray();
+        $detailTransaction = DTG::getAllOutCome();
         $data['detail_transaction_goods'] = json_decode(json_encode($detailTransaction), true);
             foreach ($data['detail_transaction_goods'] as $key => $value) {
                 $getDataTransaction = TG::GetByIdDetailTransaction($value['id']);
@@ -34,9 +33,40 @@ class reportController extends Controller
             }
         return view('admin/report/report',$data);
     }
+    public function getFoods(){
+        $id = Input::get('id');
+        $foods = DTG::GetFoodByLocationID($id);
+            $dataFoods =[];
+         foreach ($foods as $key => $value) {
+             if (empty ($dataFoods[$value['food_id']]['quantity'])) {
+                 if ($value['income'] == 1) {
+                    $dataFoods[$value['food_id']]['quantity'] = -$value['quantity'];
+                 }else {
+                    $dataFoods[$value['food_id']]['quantity'] = $value['quantity'];
+                 }  
+             }else {
+                if ($value['income'] == 1) {
+                    $dataFoods[$value['food_id']]['quantity'] = $dataFoods[$value['food_id']]['quantity'] - $value['quantity'];
+                }else{
+                    $dataFoods[$value['food_id']]['quantity'] = $dataFoods[$value['food_id']]['quantity'] + $value['quantity'];
+                }
+             }
+             $dataFoods[$value['food_id']]['location_id'] = $value['location_id'];
+             $dataFoods[$value['food_id']]['food_id'] = $value['food_id'];
+             $dataFoods[$value['food_id']]['food_name'] = $value['food_name'];
+             $dataFoods[$value['food_id']]['unit'] = $value['unit'];
+             if ($dataFoods[$value['food_id']]['quantity'] == 0 ) {
+                 unset($dataFoods[$value['food_id']]);
+             }
+         }
+         $list['foods'] = [];
+         foreach($dataFoods as $k => $v) {
+             $list['foods'][] = $v;
+         }
+        $sent = view('admin/report/form_foods',$list)->render();
+        return Response::json($sent);
+    }
     public function create() {
-        echo "<pre>";
-        print_r(Input::all());die;
             //get Data session for creator
             if (!empty(Input::get('id'))) {
             $return =$this->update(Input::all());
@@ -48,8 +78,6 @@ class reportController extends Controller
 
 }
     public function save($data) {
-        // echo "<pre>";
-        // print_r($data);die;
         if (empty(Input::file('picture'))) {
             $return['status'] = false;
             $return['messages'] ='Silahkan isi nota';
@@ -71,19 +99,19 @@ class reportController extends Controller
         $goods->created_by=$dataSession['id'];
         $goods->file_path = $picture;  
         $goods->status_id = 1;  
-        $goods->income = 0;
+        $goods->income = 1;
         $goods->save(); 
         
-        $quantity = json_decode($data['quantity'], true);
-        $name_goods = json_decode($data['name_goods'], true);
-            foreach ($name_goods as $key => $value) {
+        $foods = json_decode(Input::get('foods'), true);
+        $foodsBefore = json_decode(Input::get('foods_before'), true);
+            foreach ($foods as $key => $value) {
                 $transactionGoods =new TG;
                 $transactionGoods->detail_transaction_id = $goods->id;
-                $transactionGoods->food_id = $value;
+                $transactionGoods->food_id = $key;
                 $transactionGoods->created_at =date('Y-m-d H:i:s');
                 $transactionGoods->updated_at=date('Y-m-d H:i:s');
                 $transactionGoods->created_by=$dataSession['id'];
-                $transactionGoods->quantity = $quantity[$key];
+                $transactionGoods->quantity =$foodsBefore[$key] - $value;
                 $transactionGoods->save();
             }
         DB::commit();
@@ -171,7 +199,7 @@ class reportController extends Controller
             $getDataTransaction = json_decode(json_encode($getDataTransaction), true);
             $data['transaction_goods'] = $getDataTransaction;
         $list['data'] =$data;
-       return view('admin/food/show',$list);
+       return view('admin/report/show',$list);
    }
   public function printPrecord(){
     $id = Input::get('id');
@@ -181,26 +209,8 @@ class reportController extends Controller
     $data['transaction_goods'] = $getDataTransaction;
     $list['data'] =$data;
         
-   return view('admin/food/show_print',$list);
+   return view('admin/report/show_print',$list);
    }
-   public function getGoodsDetail(){
-        $id = Input::get('id');
-        $edit = Input::get('edit');
-        if (!empty($edit)) {
-        $data['goods'] = 
-        $queryNameCategory =GS::where('id',$id)->toArray();
-        //   $data = Category::getBrand($id);
-            $list =$data;
-            return Response::json($list);
-        }else{
-            foreach ($id as $key => $value) {
-                $queryNameCategory[] =GS::where('id',$value)->get()->toArray();
-            }
-            $list['data']=$queryNameCategory;
-            $sent = view('admin/food/form_goods',$list)->render();
-            return Response::json($sent);
-        }
-    }
     public function delete($id)
     {
         try {
@@ -209,11 +219,11 @@ class reportController extends Controller
             $detail->update();
         } catch (\Exception $e) {
             \Session::flash('DeleteFails', 'this data is used in other tables');
-            return \Redirect::to(route('food.index'));
+            return \Redirect::to(route('report.index'));
         }
 
         \Session::flash('DeleteSucces', 'SUCCESS');
-        return \Redirect::to(route('food.index'));
+        return \Redirect::to(route('report.index'));
     }
 
 }

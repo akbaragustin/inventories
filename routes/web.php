@@ -37,7 +37,8 @@ Route::group(['middleware' => 'seller_auth'], function() {
         Route::get('/location/goods', ['uses' =>'locationController@locationGoods','as'=>'location.goods']);
         Route::post('/location', ['uses' =>'locationController@create','as'=>'location.create']);
         Route::get('/location/edit', ['uses' =>'locationController@edit','as'=>'location.edit']);
-        Route::get('/location/delete/{id}', ['uses' =>'locationController@delete','as'=>'location.delete']);   
+        Route::get('/location/delete/{id}', ['uses' =>'locationController@delete','as'=>'location.delete']);
+        
          //goods
          Route::get('/goods', ['uses' =>'goodsController@index','as'=>'goods.index']);
          Route::post('/goods', ['uses' =>'goodsController@create','as'=>'goods.create']);
@@ -63,6 +64,11 @@ Route::group(['middleware' => 'seller_auth'], function() {
         //report
         Route::get('/report', ['uses' =>'reportController@index','as'=>'report.index']);
         Route::post('/report', ['uses' =>'reportController@create','as'=>'report.create']);
+        Route::get('/report/get-foods', ['uses' =>'reportController@getFoods','as'=>'report.getFoods']);   
+        Route::get('/report/edit', ['uses' =>'reportController@edit','as'=>'report.edit']);
+        Route::get('/report/delete/{id}', ['uses' =>'reportController@delete','as'=>'report.delete']);   
+        Route::get('/report-show', ['uses' =>'reportController@showAjax','as'=>'report.showAjax']);
+        Route::get('/report-print', ['uses' =>'reportController@printPrecord','as'=>'report.printPrecord']);
        
     });
 });
